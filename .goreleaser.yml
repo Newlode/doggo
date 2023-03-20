@@ -44,8 +44,8 @@ archives:
 
 dockers:
   - image_templates:
-      - "ghcr.io/mr-karan/doggo:{{ .Tag }}"
-      - "ghcr.io/mr-karan/doggo:latest"
+      - "ghcr.io/newlode/doggo:{{ .Tag }}"
+      - "ghcr.io/newlode/doggo:latest"
     id: doggo
     # IDs to filter the binaries/packages.
     ids:
@@ -55,8 +55,8 @@ dockers:
       - "--build-arg"
       - "ARCH=amd64"
   - image_templates:
-      - "ghcr.io/mr-karan/doggo:{{ .Tag }}-arm64v8"
-      - "ghcr.io/mr-karan/doggo:latest-arm64v8"
+      - "ghcr.io/newlode/doggo:{{ .Tag }}-arm64v8"
+      - "ghcr.io/newlode/doggo:latest-arm64v8"
     id: doggo-arm
     # IDs to filter the binaries/packages.
     ids:
