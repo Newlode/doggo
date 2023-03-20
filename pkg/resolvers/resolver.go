@@ -16,6 +16,7 @@ type Options struct {
 	Nameservers        []models.Nameserver
 	UseIPv4            bool
 	UseIPv6            bool
+	SourceIface        string
 	SearchList         []string
 	Ndots              int
 	Timeout            time.Duration
@@ -112,8 +113,9 @@ func LoadResolvers(opts Options) ([]Resolver, error) {
 			opts.Logger.Debug("initiating UDP resolver")
 			rslvr, err := NewClassicResolver(ns.Address,
 				ClassicResolverOpts{
-					UseTLS: false,
-					UseTCP: false,
+					UseTLS:      false,
+					UseTCP:      false,
+					SourceIface: opts.SourceIface,
 				}, opts)
 			if err != nil {
 				return rslvrs, err

@@ -37,6 +37,7 @@ func main() {
 	f.StringSliceP("type", "t", []string{}, "Type of DNS record to be queried (A, AAAA, MX etc)")
 	f.StringSliceP("class", "c", []string{}, "Network class of the DNS record to be queried (IN, CH, HS etc)")
 	f.StringSliceP("nameserver", "n", []string{}, "Address of the nameserver to send packets to")
+	f.String("iface", "", "Force source interface for DNS queries")
 	f.BoolP("reverse", "x", false, "Performs a DNS Lookup for an IPv4 or IPv6 address. Sets the query type and class to PTR and IN respectively.")
 
 	// Resolver Options
@@ -126,6 +127,7 @@ func main() {
 		Nameservers:        app.Nameservers,
 		UseIPv4:            app.QueryFlags.UseIPv4,
 		UseIPv6:            app.QueryFlags.UseIPv6,
+		SourceIface:        app.QueryFlags.SourceIface,
 		SearchList:         app.ResolverOpts.SearchList,
 		Ndots:              app.ResolverOpts.Ndots,
 		Timeout:            app.QueryFlags.Timeout * time.Second,
@@ -149,8 +151,8 @@ func main() {
 
 	// Resolve Queries.
 	var (
-			responses []resolvers.Response
-			responseErrors []error
+		responses      []resolvers.Response
+		responseErrors []error
 	)
 	for _, q := range app.Questions {
 		for _, rslv := range app.Resolvers {

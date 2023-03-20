@@ -2,6 +2,8 @@ package resolvers
 
 import (
 	"crypto/tls"
+	"log"
+	"net"
 	"time"
 
 	"github.com/miekg/dns"
@@ -17,31 +19,47 @@ type ClassicResolver struct {
 
 // ClassicResolverOpts holds options for setting up a Classic resolver.
 type ClassicResolverOpts struct {
-	UseTLS bool
-	UseTCP bool
+	UseTLS      bool
+	UseTCP      bool
+	SourceIface string
 }
 
 // NewClassicResolver accepts a list of nameservers and configures a DNS resolver.
 func NewClassicResolver(server string, classicOpts ClassicResolverOpts, resolverOpts Options) (Resolver, error) {
-	net := "udp"
+	_net := "udp"
 	client := &dns.Client{
 		Timeout: resolverOpts.Timeout,
 		Net:     "udp",
 	}
 
+	if classicOpts.SourceIface != "" {
+		ief, err := net.InterfaceByName(classicOpts.SourceIface)
+		if err != nil {
+			log.Fatal(err)
+		}
+		addrs, err := ief.Addrs()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		udpAddr := &net.UDPAddr{IP: addrs[0].(*net.IPNet).IP}
+		d := net.Dialer{LocalAddr: udpAddr}
+		client.Dialer = &d
+	}
+
 	if classicOpts.UseTCP {
-		net = "tcp"
+		_net = "tcp"
 	}
 
 	if resolverOpts.UseIPv4 {
-		net = net + "4"
+		_net = _net + "4"
 	}
 	if resolverOpts.UseIPv6 {
-		net = net + "6"
+		_net = _net + "6"
 	}
 
 	if classicOpts.UseTLS {
-		net = net + "-tls"
+		_net = _net + "-tls"
 		// Provide extra TLS config for doing/skipping hostname verification.
 		client.TLSConfig = &tls.Config{
 			ServerName:         resolverOpts.TLSHostname,
@@ -49,7 +67,7 @@ func NewClassicResolver(server string, classicOpts ClassicResolverOpts, resolver
 		}
 	}
 
-	client.Net = net
+	client.Net = _net
 
 	return &ClassicResolver{
 		client:          client,

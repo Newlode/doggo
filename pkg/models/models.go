@@ -28,6 +28,7 @@ type QueryFlags struct {
 	Nameservers        []string      `koanf:"nameservers" json:"nameservers"`
 	UseIPv4            bool          `koanf:"ipv4" json:"ipv4"`
 	UseIPv6            bool          `koanf:"ipv6" json:"ipv6"`
+	SourceIface        string        `koanf:"iface" json:"iface"`
 	Ndots              int           `koanf:"ndots" json:"ndots"`
 	Timeout            time.Duration `koanf:"timeout" json:"timeout"`
 	Color              bool          `koanf:"color" json:"-"`
